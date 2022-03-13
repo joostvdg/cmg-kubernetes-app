@@ -1,0 +1,41 @@
+server:
+  image:
+    tag: 0.29.1
+  env:
+    ROOT_PATH: "/cmg"
+  resources:
+    limits:
+      cpu: 500m
+      memory: 16Mi
+    requests:
+      cpu: 500m
+      memory: 16Mi
+  podAnnotations:
+    prometheus.io/path: /cmg/metrics
+    prometheus.io/port: "8080"
+    prometheus.io/scrape: "true"
+  ingress:
+    enabled: true
+    className: "contour"
+    hosts:
+      - host: watermelon.fritz.box
+        paths:
+          - path: /cmg
+            pathType: Prefix
+ui:
+  image:
+    tag: 1.2.0
+  ingress:
+    enabled: false
+  httpproxy:
+    enabled: true
+    fqdn: goji.fritz.box
+    prefix: /
+    replacement: /
+  resources:
+    limits:
+      cpu: 500m
+      memory: 64Mi
+    requests:
+      cpu: 500m
+      memory: 64Mi
