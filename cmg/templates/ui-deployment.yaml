@@ -43,11 +43,6 @@ spec:
           - name: {{ $pkey }}
             value: {{ quote $pval }}
 {{- end }}
-          volumeMounts:
-            - name: nextjs-env-volume
-              mountPath: /app/.env.local
-              subPath: .env.local
-              readOnly: true
           ports:
             - name: http
               containerPort: 3000
@@ -62,10 +57,6 @@ spec:
               port: http
           resources:
             {{- toYaml .Values.ui.resources | nindent 12 }}
-      volumes:
-        - name: nextjs-env-volume
-          configMap:
-            name:  {{ include "cmg.fullname" . }}-ui
       {{- with .Values.ui.nodeSelector }}
       nodeSelector:
         {{- toYaml . | nindent 8 }}
