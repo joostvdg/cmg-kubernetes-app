@@ -2,11 +2,11 @@
 apiVersion: projectcontour.io/v1
 kind: HTTPProxy
 metadata:
-  name: {{ include "cmg.fullname" . }}-server
+  name: {{ include "cmg.fullname" . }}-servers
   namespace: {{ .Release.Namespace }}
   labels:
     {{- include "cmg.labels" . | nindent 4 }}
-    app.kubernetes.io/component: server
+    app.kubernetes.io/component: servers
   {{- with .Values.server.httpproxy.annotations }}
   annotations:
     {{- toYaml . | nindent 4 }}
@@ -14,6 +14,14 @@ metadata:
 spec:
   ingressClassName: contour
   routes:
+    - conditions:
+        - prefix: {{ .Values.seafarers.httpproxy.prefix }}
+      pathRewritePolicy:
+        replacePrefix:
+          - replacement: {{ .Values.seafarers.httpproxy.replacement }}
+      services:
+        - name: {{ include "cmg.fullname" . }}-seafarers
+          port: {{ .Values.server.service.port }}
     - conditions:
         - prefix: {{ .Values.server.httpproxy.prefix }}
       pathRewritePolicy:

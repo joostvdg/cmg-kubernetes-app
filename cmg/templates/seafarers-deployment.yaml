@@ -1,0 +1,71 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "cmg.fullname" . }}-seafarers
+  namespace: {{ .Release.Namespace }}
+  labels:
+    {{- include "cmg.labels" . | nindent 4 }}
+    app.kubernetes.io/component: seafarers
+spec:
+  {{- if not .Values.seafarers.autoscaling.enabled }}
+  replicas: {{ .Values.seafarers.replicaCount }}
+  {{- end }}
+  selector:
+    matchLabels:
+      {{- include "cmg.selectorLabels" . | nindent 6 }}
+      app.kubernetes.io/component: seafarers
+  template:
+    metadata:
+      {{- with .Values.seafarers.podAnnotations }}
+      annotations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      labels:
+        {{- include "cmg.selectorLabels" . | nindent 8 }}
+        app.kubernetes.io/component: seafarers
+    spec:
+      {{- with .Values.seafarers.imagePullSecrets }}
+      imagePullSecrets:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      securityContext:
+        {{- toYaml .Values.seafarers.podSecurityContext | nindent 8 }}
+      containers:
+        - name: {{ .Chart.Name }}
+          securityContext:
+            {{- toYaml .Values.seafarers.securityContext | nindent 12 }}
+          image: "{{ .Values.seafarers.image.repository }}/cmg-seafarers:{{ .Values.seafarers.image.tag | default .Chart.AppVersion }}"
+          imagePullPolicy: {{ .Values.seafarers.image.pullPolicy }}
+          env:
+          - name: VERSION
+            value: {{ .Chart.Version }}
+{{- range $pkey, $pval := .Values.seafarers.env }}
+          - name: {{ $pkey }}
+            value: {{ quote $pval }}
+{{- end }}
+          ports:
+            - name: http
+              containerPort: 8080
+              protocol: TCP
+          livenessProbe:
+            httpGet:
+              path: /health
+              port: http
+          readinessProbe:
+            httpGet:
+              path: /health
+              port: http
+          resources:
+            {{- toYaml .Values.seafarers.resources | nindent 12 }}
+      {{- with .Values.seafarers.nodeSelector }}
+      nodeSelector:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.seafarers.affinity }}
+      affinity:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.seafarers.tolerations }}
+      tolerations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}

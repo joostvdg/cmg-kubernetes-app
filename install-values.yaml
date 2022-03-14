@@ -5,10 +5,10 @@ server:
     ROOT_PATH: "/cmg"
   resources:
     limits:
-      cpu: 500m
+      cpu: 250m
       memory: 16Mi
     requests:
-      cpu: 500m
+      cpu: 250m
       memory: 16Mi
   podAnnotations:
     prometheus.io/path: /cmg/metrics
@@ -24,7 +24,7 @@ server:
             pathType: Prefix
 ui:
   image:
-    tag: 1.2.0
+    tag: 1.2.1
   ingress:
     enabled: false
   httpproxy:
@@ -39,3 +39,21 @@ ui:
     requests:
       cpu: 500m
       memory: 64Mi
+
+seafarers:
+  image:
+    tag: 0.1.6
+  resources:
+    limits:
+      cpu: 250m
+      memory: 256Mi
+    requests:
+      cpu: 250m
+      memory: 128Mi
+  ingress:
+    enabled: false
+  httpproxy:
+    enabled: true
+    fqdn: watermelon.fritz.box
+    prefix: /seafarers
+    replacement: /
