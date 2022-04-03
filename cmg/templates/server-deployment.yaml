@@ -39,6 +39,14 @@ spec:
           env:
           - name: VERSION
             value: {{ .Chart.Version }}
+          - name: ANALYTICS_API_ENDPOINT
+            value: "http://{{ include "cmg.fullname" . }}-analytics/generationRequest"
+          - name: ANALYTICS_LOGIN_ENDPOINT
+            value: "http://{{ include "cmg.fullname" . }}-analytics/login"
+          - name: ANALYTICS_API_PASSWORD
+            value: test
+          - name: ANALYTICS_API_USER
+            value: test
 {{- range $pkey, $pval := .Values.server.env }}
           - name: {{ $pkey }}
             value: {{ quote $pval }}

@@ -1,6 +1,6 @@
 server:
   image:
-    tag: 0.29.1
+    tag: 1.0.2
   env:
     ROOT_PATH: "/cmg"
   resources:
