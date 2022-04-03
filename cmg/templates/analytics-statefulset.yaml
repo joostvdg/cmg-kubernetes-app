@@ -1,0 +1,92 @@
+{{- if .Values.analytics.enabled -}}
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: {{ include "cmg.fullname" . }}-analytics
+  namespace: {{ .Release.Namespace }}
+  labels:
+    {{- include "cmg.labels" . | nindent 4 }}
+    app.kubernetes.io/component: analytics
+spec:
+  selector:
+    matchLabels:
+      {{- include "cmg.selectorLabels" . | nindent 6 }}
+      app.kubernetes.io/component: analytics
+  replicas: {{ .Values.analytics.replicaCount }}
+  serviceName: {{ include "cmg.fullname" . }}-analytics
+  template:
+    metadata:
+      {{- with .Values.analytics.podAnnotations }}
+      annotations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      labels:
+        {{- include "cmg.selectorLabels" . | nindent 8 }}
+        app.kubernetes.io/component: analytics
+    spec:
+      {{- with .Values.analytics.imagePullSecrets }}
+      imagePullSecrets:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      securityContext:
+        {{- toYaml .Values.analytics.podSecurityContext | nindent 8 }}
+      containers:
+        - name: {{ .Chart.Name }}
+          securityContext:
+            {{- toYaml .Values.analytics.securityContext | nindent 12 }}
+          image: "{{ .Values.analytics.image.repository }}/cmg-analytics:{{ .Values.analytics.image.tag | default .Chart.AppVersion }}"
+          imagePullPolicy: {{ .Values.analytics.image.pullPolicy }}
+          env:
+          - name: JDBC_DATABASE_URL
+            value: "jdbc:postgresql://{{ include "cmg.fullname" . }}-postgresql:5432/cmg"
+          - name: JDBC_DATABASE_USERNAME
+            value: {{ .Values.postgresql.auth.username }}
+          - name: JDBC_DATABASE_PASSWORD
+            value: {{ .Values.postgresql.auth.password }}
+          - name: JDBC_DATABASE_NAME
+            value: {{ .Values.postgresql.auth.database }}
+          - name: MICRONAUT_SERVER_PORT
+            value: "{{ .Values.analytics.port }}"
+          - name: MICRONAUT_SERVER_HOST
+            value: "0.0.0.0"
+          - name: VERSION
+            value: {{ .Chart.Version }}
+{{- range $pkey, $pval := .Values.analytics.env }}
+          - name: {{ $pkey }}
+            value: {{ quote $pval }}
+{{- end }}
+          ports:
+            - name: http
+              containerPort: {{ .Values.analytics.port }}
+              protocol: TCP
+          startupProbe:
+            httpGet:
+              path: /health
+              port: http
+            failureThreshold: 30
+            periodSeconds: 10
+          livenessProbe:
+            httpGet:
+              path: /health
+              port: http
+          readinessProbe:
+            httpGet:
+              path: /health
+              port: http
+            initialDelaySeconds: 15
+            periodSeconds: 20
+          resources:
+            {{- toYaml .Values.analytics.resources | nindent 12 }}
+      {{- with .Values.analytics.nodeSelector }}
+      nodeSelector:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.analytics.affinity }}
+      affinity:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.analytics.tolerations }}
+      tolerations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+{{- end }}

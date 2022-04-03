@@ -57,7 +57,7 @@ ui:
     tag: 1.2.1
   labels: {}
   imagePullSecrets: null
-  replicaCount: 3
+  replicaCount: 1
   resources: {}
   podAnnotations: {}
   podSecurityContext: {}
@@ -148,5 +148,33 @@ seafarers:
     #      - chart-example.local
 
 analytics:
+  enabled: true
   image:
-    tag:
+    repository: caladreas
+    pullPolicy: IfNotPresent
+    tag: 0.2.2
+  port: 8080
+  labels: {}
+  imagePullSecrets: null
+  replicaCount: 1
+  resources: {}
+  podAnnotations: {}
+  podSecurityContext: {}
+  securityContext: {}
+  nodeSelector: {}
+  tolerations: []
+  affinity: {}
+  service:
+    type: ClusterIP
+    port: 80
+    annotations: {}
+
+postgresql:
+  auth:
+    username: cmgadministrator
+    password: W4p7ygoikAuFwMGNKNvE
+    database: cmg
+  global:
+    postgresql:
+      auth:
+        postgresPassword: xECs36mAcV6HsysqZ6rE

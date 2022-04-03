@@ -25,6 +25,7 @@ server:
 ui:
   image:
     tag: 1.2.1
+  replicaCount: 1
   ingress:
     enabled: false
   httpproxy:
@@ -35,10 +36,10 @@ ui:
   resources:
     limits:
       cpu: 500m
-      memory: 64Mi
+      memory: 128Mi
     requests:
       cpu: 500m
-      memory: 64Mi
+      memory: 128Mi
 
 seafarers:
   image:
@@ -46,10 +47,10 @@ seafarers:
   resources:
     limits:
       cpu: 250m
-      memory: 256Mi
+      memory: 128Mi
     requests:
       cpu: 250m
-      memory: 128Mi
+      memory: 64Mi
   ingress:
     enabled: false
   httpproxy:
@@ -57,3 +58,14 @@ seafarers:
     fqdn: watermelon.fritz.box
     prefix: /seafarers
     replacement: /
+
+analytics:
+  image:
+    tag: 0.2.11
+  resources:
+    limits:
+      cpu: 250m
+      memory: 128Mi
+    requests:
+      cpu: 250m
+      memory: 64Mi
