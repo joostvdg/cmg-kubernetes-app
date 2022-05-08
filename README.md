@@ -18,7 +18,7 @@ Packaging for CMG components to run as a single Kubernetes App
 * use secret to connect to CMG Analytics
 * add environment configuration for external services
 * use secrets for external service API Token
-* Go in container optimization (processor: https://github.com/golang/go/issues/33803)
+* --Go in container optimization (processor: https://github.com/golang/go/issues/33803)--
 
 ### Overall
 
